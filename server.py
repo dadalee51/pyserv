@@ -16,7 +16,7 @@ def serve(port):
 	debug_freq=0 #print the screen every ten times over loop.
 	print(f'prepareing {port}')
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		s.bind(('123.243.118.66', port))
+		s.bind(('192.168.1.111', port))
 		s.listen(1)
 		conn, addr = s.accept()
 		with conn:
