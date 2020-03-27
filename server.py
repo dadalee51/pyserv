@@ -36,7 +36,7 @@ def serve(port):
 					print('ok.')
 
 e=concurrent.futures.ThreadPoolExecutor(max_workers=2)
-HOST = '192.168.1.111' 
+HOST = '123.243.118.66' 
 PORT = 50007      
 running=True
 players=dict()
