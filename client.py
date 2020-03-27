@@ -1,4 +1,4 @@
-#client v6
+#client v7
 import socket
 import pickle
 import gamepacket
@@ -9,9 +9,9 @@ gp=gamepacket.GamePacket(random.randint(50,5000))
 gp.username=input('please enter player\'s name:')
 gp.color=(random.randint(1,255),random.randint(1,255),random.randint(1,255))
 #each player should assign themselves with a unique id.
-HOST = '127.0.0.1'    # address of server
-#HOST = '192.168.1.111'    # address of server
-#HOST = '123.243.118.66'    # address of server
+HOST = '127.0.0.1'    # address of server if you run your own
+#HOST = '192.168.1.111'    # address of server if you are in class
+#HOST = '123.243.118.66'    # address of server if you want to join others over the internet.
 PORT = 50007          # the port for first contact
 
 print('press q to quit, press f to switch fullscreen...')
@@ -22,6 +22,7 @@ screen=pygame.display.set_mode((800, 600))
 width,height=screen.get_size()
 clock=pygame.time.Clock()
 running=True
+drag=False
 font = pygame.font.SysFont(None, 12)
 img = font.render(gp.username, True, gp.color)
 #first connection
@@ -40,13 +41,23 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		#motion keys
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_UP]:
-			gp.pos_y -= 1
+			gp.pos_y -= 4
 		if keys[pygame.K_DOWN]:
-			gp.pos_y += 1
+			gp.pos_y += 4
 		if keys[pygame.K_LEFT]:
-			gp.pos_x -= 1
+			gp.pos_x -= 4
 		if keys[pygame.K_RIGHT]:
-			gp.pos_x += 1
+			gp.pos_x += 4
+		#if keys[pygame.K_a]:
+		#	gp.size+=1
+		#if keys[pygame.K_d]:
+		#	if gp.size > 5 : gp.size-=1
+		#do some wrapping magic here
+		if gp.pos_x < 0: gp.pos_x = 800
+		if gp.pos_x > 800: gp.pos_x = 0
+		if gp.pos_y < 0: gp.pos_y = 600
+		if gp.pos_y > 600: gp.pos_y = 0
+		
 		#event keys:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -55,7 +66,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 				if event.key==pygame.K_q:
 					running=False
 					gp.quit=1
-					
+				elif event.key==pygame.K_SPACE:
+					drag=not drag
 				elif event.key==pygame.K_f:
 					full_screen=not full_screen
 					if full_screen: 
@@ -65,7 +77,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 						screen=pygame.display.set_mode((800, 600))
 		#update drawing based on game packet.
 		screen.fill(gp.color,(gp.pos_x,gp.pos_y,gp.size,gp.size))
-		screen.blit(img, (gp.pos_x+5,gp.pos_y-5))
+		screen.blit(img, (gp.pos_x+gp.size+5,gp.pos_y+gp.size-5))
 		s.send(pickle.dumps(gp))
 		if gp.quit==1:
 			break

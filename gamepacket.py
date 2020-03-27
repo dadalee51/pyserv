@@ -1,4 +1,4 @@
-#gamepacket v6
+#gamepacket v7
 import random
 class GamePacket:
 	def __init__(self,id=-1):

@@ -1,4 +1,4 @@
-#server v6
+#server v7
 import socket
 import pickle
 import gamepacket
