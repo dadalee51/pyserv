@@ -8,8 +8,8 @@ import random
 gp=gamepacket.GamePacket(random.randint(50,5000)) 
 gp.color=(random.randint(1,255),random.randint(1,255),random.randint(1,255))
 #each player should assign themselves with a unique id.
-#HOST = '192.168.1.111'    # address of server
-HOST = '123.243.118.66'    # address of server
+HOST = '192.168.1.111'    # address of server
+#HOST = '123.243.118.66'    # address of server
 PORT = 50007          # the port for first contact
 
 print('press q to quit, press f to switch fullscreen...')

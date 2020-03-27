@@ -16,7 +16,7 @@ def serve(port):
 	debug_freq=0 #print the screen every ten times over loop.
 	print(f'prepareing {port}')
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		s.bind(('192.168.1.111', port))
+		s.bind((HOST, port))
 		s.listen(1)
 		conn, addr = s.accept()
 		with conn:
@@ -36,7 +36,7 @@ def serve(port):
 					print('ok.')
 
 e=concurrent.futures.ThreadPoolExecutor(max_workers=2)
-HOST = '' 
+HOST = '192.168.1.111' 
 PORT = 50007      
 running=True
 players=dict()
