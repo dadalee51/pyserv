@@ -50,6 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 				if event.key==pygame.K_q:
 					running=False
 					gp.quit=1
+					
 				elif event.key==pygame.K_f:
 					full_screen=not full_screen
 					if full_screen: 
@@ -60,6 +61,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		#update drawing based on game packet.
 		screen.fill(gp.color,(gp.pos_x,gp.pos_y,gp.size,gp.size))
 		s.send(pickle.dumps(gp))
+		if gp.quit==1:
+			break
 		data = pickle.loads(s.recv(1024))
 		data.pop(gp.player_id)
 		for p in data.items():
