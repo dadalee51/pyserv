@@ -29,14 +29,14 @@ def serve(port):
 					players.pop(data.player_id)
 				conn.send(pickle.dumps(players))
 				debug_freq+=1
-				debug_freq%=10
+				debug_freq%=30
 				if debug_freq==1:
 					for p in players.items():
 							print(p,end='')
 					print('ok.')
 
 e=concurrent.futures.ThreadPoolExecutor(max_workers=2)
-HOST = '192.168.1.111' 
+HOST = '' 
 PORT = 50007      
 running=True
 players=dict()

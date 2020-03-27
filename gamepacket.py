@@ -9,6 +9,7 @@ class GamePacket:
 		self.size=4
 		self.port=0
 		self.quit=0
+		self.username=''
 
 	def __str__(self):
 		return f'port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color}'
