@@ -35,19 +35,20 @@ def serve(port):
 							print(p,end='')
 					print('ok.')
 
-e=concurrent.futures.ThreadPoolExecutor(max_workers=2)
+e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '' 
-PORT = 50007      
+PORT = 50007
 running=True
 players=dict()
 while running:
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.bind((HOST, PORT))
 		s.listen(1)
+		print('accepting connections...')
 		conn, addr = s.accept()
 		#non-blocking, instantly free up so other clients can connect almost without waiting:
-		#s.settimeout(0)
-		s.setblocking(0)
+		s.settimeout(0)
+		#s.setblocking(0)
 		with conn:
 			print('Connected by', addr)
 			data = pickle.loads(conn.recv(1024))
