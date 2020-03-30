@@ -10,7 +10,7 @@ gp.username=input('please enter player\'s name:')
 gp.color=(random.randint(1,255),random.randint(1,255),random.randint(1,255))
 #each player should assign themselves with a unique id.
 HOST = '127.0.0.1'    # address of server if you run your own
-#HOST = '192.168.1.26'    # address of server if you run your own
+#HOST = '192.168.1.30'    # address of server if you run your own
 #HOST = '192.168.1.111'    # address of server if you are in class
 #HOST = '123.243.118.66'    # address of server if you want to join others over the internet.
 PORT = 50007          # the port for first contact
