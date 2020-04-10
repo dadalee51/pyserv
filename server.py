@@ -14,7 +14,7 @@ def serve(port):
 	'''
 	global players
 	debug_freq=0 #print the screen every ten times over loop.
-	print(f'prepareing {port}')
+	print('prepareing {}'.format(port))
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.bind((HOST, port))
 		s.listen(1)
