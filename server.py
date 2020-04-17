@@ -1,10 +1,11 @@
 #server v7
 import socket
 import pickle
-import gamepacket
+import gamepacket as gp
 import concurrent.futures
 import random
 from contextlib import suppress
+from bitstring import BitArray
 
 def serve(port):
 	'''
@@ -12,7 +13,9 @@ def serve(port):
 	the job is simple, just open up a socket exclusively
 	for one client only.
 	'''
+	global world #one gigantic packet
 	global players
+	global walls
 	debug_freq=0 #print the screen every ten times over loop.
 	print('prepareing {}'.format(port))
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -22,24 +25,35 @@ def serve(port):
 		with conn:
 			print('REConnected by', addr)
 			while True:
-				data = pickle.loads(conn.recv(1024))
+				#receive and dictate if required.
+				#from client we only receive its version of the world.
+				data = pickle.loads(conn.recv(PACKSIZE))
 				if data.quit == 0 : 
-					players[data.player_id]= data
-				else:
-					players.pop(data.player_id)
-				conn.send(pickle.dumps(players))
+					world.players[data.player_id]= data
+					if data.newwall:
+						world.walls.overwrite('0b1',data.newwall)
+				else:#if quit.
+					world.players.pop(data.player_id)
+				#print(world)
+				conn.send(pickle.dumps(world))
 				debug_freq+=1
 				debug_freq%=30
 				if debug_freq==1:
-					for p in players.items():
-							print(p,end='')
-					print('ok.')
+					pass
+					#for p in players.items():
+					#		print(p,end='')
+					#print('ok.')
 
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '' 
 PORT = 50007
 running=True
 players=dict()
+bitwallLen=int(gp.GamePacket.gameTileWidth*gp.GamePacket.gameTileHeight)
+print(f'bitwallLen:{bitwallLen}')
+walls=BitArray(length=bitwallLen)
+world=gp.WorldPacket(players,walls)
+PACKSIZE=gp.WorldPacket.packSize
 while running:
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -52,7 +66,7 @@ while running:
 		#s.setblocking(0)
 		with conn:
 			print('Connected by', addr)
-			data = pickle.loads(conn.recv(1024))
+			data = pickle.loads(conn.recv(PACKSIZE))
 			data.port=random.randint(40000,42000)
 			players[data.player_id]= data
 			print(data)
