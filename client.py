@@ -24,7 +24,6 @@ screen=pygame.display.set_mode(gp.gameMode)
 width,height=screen.get_size()
 clock=pygame.time.Clock()
 running=True
-drag=False
 font = pygame.font.SysFont(None, 12)
 img = font.render(gp.username, True, gp.color)
 #first connection
@@ -57,10 +56,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		if keys[pygame.K_RIGHT]:
 			gp.pos_x += 4
 		#do some wrapping magic here
-		if gp.pos_x < 0: gp.pos_x = gp.gameWidth
-		if gp.pos_x > gp.gameWidth: gp.pos_x = 0
-		if gp.pos_y < 0: gp.pos_y = gp.gameHeight
-		if gp.pos_y > gp.gameHeight: gp.pos_y = 0
+		if gp.pos_x < 4: gp.pos_x = gp.gameWidth-4
+		if gp.pos_x > gp.gameWidth-4: gp.pos_x = 4
+		if gp.pos_y < 4: gp.pos_y = gp.gameHeight-4
+		if gp.pos_y > gp.gameHeight-4: gp.pos_y = 4
 		
 		#event keys:
 		for event in pygame.event.get():
@@ -84,13 +83,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		screen.fill(gp.color,(gp.pos_x,gp.pos_y,gp.size,gp.size))
 		screen.blit(img, (gp.pos_x+gp.size+5,gp.pos_y+gp.size-5))
 		#dump and send game packet to socket.
-		s.send(pickle.dumps(gp))
+		#print(gp)
+		content=pickle.dumps(gp)
+		s.send(content)
 		if gp.quit==1:
 			break
 		#load world packet from server.
-		world = pickle.loads(s.recv(PACKSIZE))
+		r=s.recv(PACKSIZE)
+		world = pickle.loads(r)
 		#discard own data, may need in future.
 		world.players.pop(gp.player_id)
+	
+			
 		for p in world.players.items():
 			p=p[1]
 			screen.fill(p.color,(p.pos_x,p.pos_y,p.size,p.size))

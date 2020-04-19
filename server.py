@@ -7,6 +7,13 @@ import random
 from contextlib import suppress
 from bitstring import BitArray
 
+def monit():
+	#method which only print stuff to console to aid debugging.
+	global world	
+	while True:
+		Thread.sleep(1)
+		print(world.players)
+
 def serve(port):
 	'''
 	this function is job for ThreadPoolExecutor. 
@@ -34,7 +41,7 @@ def serve(port):
 						world.walls.overwrite('0b1',data.newwall)
 				else:#if quit.
 					world.players.pop(data.player_id)
-				#print(world)
+				#print(world.walls)
 				conn.send(pickle.dumps(world))
 				debug_freq+=1
 				debug_freq%=30
@@ -54,6 +61,8 @@ print(f'bitwallLen:{bitwallLen}')
 walls=BitArray(length=bitwallLen)
 world=gp.WorldPacket(players,walls)
 PACKSIZE=gp.WorldPacket.packSize
+#setup monitor work
+e.submit(monit)
 while running:
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

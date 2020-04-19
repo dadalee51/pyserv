@@ -19,18 +19,18 @@ class GamePacket:
 		self.port=0
 		self.quit=0
 		self.username=''
-		self.drag=-1
-		self.wall=BitArray()
+		self.drag=0
+		#self.wall=BitArray()
 		self.newwall=-1 # a bitarray position of the new wall, one brick at a time.
 
 	def __str__(self):
-		return f'port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color}'
+		return f'port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color},newwall:{self.newwall}'
 	
 	def __repr__(self):
 		return self.__str__()
 		
 	def bstoXY(self,bpos):
-		return (bpos%self.gameTileWidth+1, bpos//self.gameTileWidth+1)
+		return (bpos%self.gameTileWidth+1, bpos//self.gameTileWidth)
 	def XYtobs(self,x,y):
 		return x+(y*self.gameTileWidth)
 	
