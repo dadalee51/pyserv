@@ -22,9 +22,10 @@ class GamePacket:
 		self.drag=0
 		#self.wall=BitArray()
 		self.newwall=-1 # a bitarray position of the new wall, one brick at a time.
+		self.explode=-1 #create a wave around self from the location of the map and remove walls.
 
 	def __str__(self):
-		return f'port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color},newwall:{self.newwall}'
+		return f'name:{self.username},port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color},newwall:{self.newwall},explode:{self.explode}'
 	
 	def __repr__(self):
 		return self.__str__()
@@ -35,16 +36,11 @@ class GamePacket:
 		return x+(y*self.gameTileWidth)
 	
 class WorldPacket:
-	packSize=8000
-	def __init__(self,p,w):
+	#packSize=int(GamePacket.gameTileWidth*GamePacket.gameTileHeight/3)
+	packSize=12000
+	def __init__(self,p,w,e):
 		self.players=p
 		self.walls=w
-		
-	#print wall, waste of time.
-	def printWalls(a):
-		for i,b in enumerate(a):
-				print('1' if b else '0', end='')
-				if i%gp.GamePacket.gameTileWidth==gp.GamePacket.gameTileWidth-1: print()
-		print('----')
+		self.explode=e
 		
 	

@@ -6,13 +6,15 @@ import concurrent.futures
 import random
 from contextlib import suppress
 from bitstring import BitArray
+from time import sleep
 
 def monit():
 	#method which only print stuff to console to aid debugging.
-	global world	
+	global world
+	print('monit started')
 	while True:
-		Thread.sleep(1)
 		print(world.players)
+		sleep(1)
 
 def serve(port):
 	'''
@@ -23,6 +25,9 @@ def serve(port):
 	global world #one gigantic packet
 	global players
 	global walls
+	global explode
+	global explpos
+	
 	debug_freq=0 #print the screen every ten times over loop.
 	print('prepareing {}'.format(port))
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -32,25 +37,29 @@ def serve(port):
 		with conn:
 			print('REConnected by', addr)
 			while True:
-				#receive and dictate if required.
-				#from client we only receive its version of the world.
+				#update world based on history
+				for exp in explpos:
+					world.explode.overwrite('0b0',exp)
+				explpos.clear()
+				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
+				#print('received',data)
 				if data.quit == 0 : 
 					world.players[data.player_id]= data
-					if data.newwall:
+					if data.newwall>-1:
 						world.walls.overwrite('0b1',data.newwall)
+					if data.explode>-1:
+						#record the explosion centre,
+						#pass the explosion to other clients
+						#which they keep track of the state 
+						#themselves.
+						world.explode.overwrite('0b1',data.explode)
+						explpos.add(data.explode)
+						#print(explpos)
 				else:#if quit.
 					world.players.pop(data.player_id)
-				#print(world.walls)
 				conn.send(pickle.dumps(world))
-				debug_freq+=1
-				debug_freq%=30
-				if debug_freq==1:
-					pass
-					#for p in players.items():
-					#		print(p,end='')
-					#print('ok.')
-
+				
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '' 
 PORT = 50007
@@ -59,7 +68,10 @@ players=dict()
 bitwallLen=int(gp.GamePacket.gameTileWidth*gp.GamePacket.gameTileHeight)
 print(f'bitwallLen:{bitwallLen}')
 walls=BitArray(length=bitwallLen)
-world=gp.WorldPacket(players,walls)
+explode=BitArray(length=bitwallLen)
+#explosion lists are only kept by server.
+explpos=set()
+world=gp.WorldPacket(players,walls,explode)
 PACKSIZE=gp.WorldPacket.packSize
 #setup monitor work
 e.submit(monit)
@@ -67,7 +79,7 @@ while running:
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		s.bind((HOST, PORT))
-		s.listen(1)
+		s.listen(1)	
 		print('accepting connections...')
 		conn, addr = s.accept()
 		#non-blocking, instantly free up so other clients can connect almost without waiting:
@@ -78,7 +90,7 @@ while running:
 			data = pickle.loads(conn.recv(PACKSIZE))
 			data.port=random.randint(40000,42000)
 			players[data.player_id]= data
-			print(data)
+			print(data.username+' connected.')
 			e.submit(serve,data.port)
 			conn.send(pickle.dumps(data))
 			
