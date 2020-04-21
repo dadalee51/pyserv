@@ -43,7 +43,6 @@ def serve(port):
 				explpos.clear()
 				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
-				#print('received',data)
 				if data.quit == 0 : 
 					world.players[data.player_id]= data
 					if data.newwall>-1:
@@ -55,7 +54,6 @@ def serve(port):
 						#themselves.
 						world.explode.overwrite('0b1',data.explode)
 						explpos.add(data.explode)
-						#print(explpos)
 				else:#if quit.
 					world.players.pop(data.player_id)
 				conn.send(pickle.dumps(world))

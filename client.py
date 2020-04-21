@@ -21,6 +21,7 @@ print('press q to quit, press f to switch fullscreen...')
 full_screen=False
 pygame.init()
 screen=pygame.display.set_mode(gp.gameMode)
+scr_expl=pygame.Surface(gp.gameMode,pygame.SRCALPHA)
 width,height=screen.get_size()
 clock=pygame.time.Clock()
 running=True
@@ -86,7 +87,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 				elif event.key==pygame.K_f:
 					full_screen=not full_screen
 					if full_screen: 
-						screen=pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+						screen=pygame.display.set_mode((0, 0), pygame.FULLSCREEN,pygame.SRCALPHA)
 						width,height=screen.get_size()
 					else: 
 						screen=pygame.display.set_mode(gp.gameMode)
@@ -117,21 +118,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		#record explosion from server
 		for pos,exist in enumerate(world.explode):
 			if exist:
-				#print('something in world.explode!')
 				p=gp.bstoXY(pos)
 				#update the local explosions
 				local_explode[p[0]][p[1]]+=1
 		#draw a growing circle until the number in local list reaches 100
-		#print('=================================')
-		#print(local_explode)
 		for k,i in enumerate(local_explode):
 			for m,j in enumerate(i):
 				if j >= 0 and j < 100:
 					local_explode[k][m]+=5
-					pygame.draw.circle(screen,(250,250,50),(k*gp.gameTileSize,m*gp.gameTileSize),j)
+					pygame.draw.circle(scr_expl,(250,250,50,100-j),(k*gp.gameTileSize,m*gp.gameTileSize),j)
+					screen.blit(scr_expl,(0,0))
 				else:
 					local_explode[k][m]=-1
-		
+		scr_expl.fill((0,0,0))
 		#draw walls.
 		for pos,exist in enumerate(world.walls):
 			if exist: 
