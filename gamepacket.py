@@ -4,6 +4,7 @@ from bitstring import BitArray
 import socket
 import pickle
 class GamePacket:
+	explosionRange=100
 	gameTileSize=4
 	gameWidth=800
 	gameHeight=600
@@ -23,7 +24,7 @@ class GamePacket:
 		#self.wall=BitArray()
 		self.newwall=-1 # a bitarray position of the new wall, one brick at a time.
 		self.explode=-1 #create a wave around self from the location of the map and remove walls.
-
+		
 	def __str__(self):
 		return f'name:{self.username},port:{self.port},x:{self.pos_x},y:{self.pos_y},color:{self.color},newwall:{self.newwall},explode:{self.explode}'
 	

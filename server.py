@@ -6,7 +6,7 @@ import concurrent.futures
 import random
 from contextlib import suppress
 from bitstring import BitArray
-from time import sleep
+from time import sleep,time
 
 def monit():
 	#method which only print stuff to console to aid debugging.
@@ -39,8 +39,12 @@ def serve(port):
 			while True:
 				#update world based on history
 				for exp in explpos:
-					world.explode.overwrite('0b0',exp)
-				explpos.clear()
+					#convert the exp to xy position, anywalls
+					#within the radius will be removed.
+					if exp[1]<time()-1:
+						world.explode.overwrite('0b0',exp[0])
+				#if explpos is outdated, remove it.
+				explpos={e for e in explpos if e[1]<time()-1}
 				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
 				if data.quit == 0 : 
@@ -53,7 +57,7 @@ def serve(port):
 						#which they keep track of the state 
 						#themselves.
 						world.explode.overwrite('0b1',data.explode)
-						explpos.add(data.explode)
+						explpos.add((data.explode,time()))
 				else:#if quit.
 					world.players.pop(data.player_id)
 				conn.send(pickle.dumps(world))
