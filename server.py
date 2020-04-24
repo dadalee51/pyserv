@@ -25,7 +25,6 @@ def serve(port):
 	global world #one gigantic packet
 	global players
 	global walls
-	global explode
 	global explpos
 	
 	debug_freq=0 #print the screen every ten times over loop.
@@ -36,28 +35,20 @@ def serve(port):
 		conn, addr = s.accept()
 		with conn:
 			print('REConnected by', addr)
+			#preload current world.
+			
+			#then go with flow
 			while True:
-				#update world based on history
-				for exp in explpos:
-					#convert the exp to xy position, anywalls
-					#within the radius will be removed.
-					if exp[1]<time()-1:
-						world.explode.overwrite('0b0',exp[0])
-				#if explpos is outdated, remove it.
-				explpos={e for e in explpos if e[1]<time()-1}
+				#update explpos since it is intrim.
+				world.explpos={e for e in explpos if e[1]>=time()-0.25}
 				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
-				if data.quit == 0 : 
+				if data.quit == 0: 
 					world.players[data.player_id]= data
 					if data.newwall>-1:
 						world.walls.overwrite('0b1',data.newwall)
 					if data.explode>-1:
-						#record the explosion centre,
-						#pass the explosion to other clients
-						#which they keep track of the state 
-						#themselves.
-						world.explode.overwrite('0b1',data.explode)
-						explpos.add((data.explode,time()))
+						world.explpos.add((data.explode,time()))
 				else:#if quit.
 					world.players.pop(data.player_id)
 				conn.send(pickle.dumps(world))
@@ -70,10 +61,10 @@ players=dict()
 bitwallLen=int(gp.GamePacket.gameTileWidth*gp.GamePacket.gameTileHeight)
 print(f'bitwallLen:{bitwallLen}')
 walls=BitArray(length=bitwallLen)
-explode=BitArray(length=bitwallLen)
-#explosion lists are only kept by server.
+
+#explosion set are only kept by server.
 explpos=set()
-world=gp.WorldPacket(players,walls,explode)
+world=gp.WorldPacket(players,walls,explpos)
 PACKSIZE=gp.WorldPacket.packSize
 #setup monitor work
 e.submit(monit)

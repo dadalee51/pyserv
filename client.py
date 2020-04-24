@@ -114,18 +114,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			screen.fill(p.color,(p.pos_x,p.pos_y,p.size,p.size))
 			pname = font.render(p.username, True, p.color)
 			screen.blit(pname, (p.pos_x+5,p.pos_y-5))
-		
 		#record explosion from server
-		for pos,exist in enumerate(world.explode):
-			if exist:
-				p=gp.bstoXY(pos)
-				#update the local explosions
-				local_explode[p[0]][p[1]]+=1
-		#draw a growing circle until the number in local list reaches 100
+		for e in world.explpos:
+			p=gp.bstoXY(e[0])
+			local_explode[p[0]][p[1]]+=1
+		#draw a explosion circle
 		for k,i in enumerate(local_explode):
 			for m,j in enumerate(i):
 				if j >= 0 and j < 100:
-					local_explode[k][m]+=5
+					local_explode[k][m]+=20
 					pygame.draw.circle(scr_expl,(250,250,50,100-j),(k*gp.gameTileSize,m*gp.gameTileSize),j)
 					screen.blit(scr_expl,(0,0))
 				else:

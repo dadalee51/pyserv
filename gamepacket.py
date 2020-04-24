@@ -42,6 +42,6 @@ class WorldPacket:
 	def __init__(self,p,w,e):
 		self.players=p
 		self.walls=w
-		self.explode=e
+		self.explpos=e
 		
 	
