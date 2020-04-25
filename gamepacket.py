@@ -38,10 +38,17 @@ class GamePacket:
 	
 class WorldPacket:
 	#packSize=int(GamePacket.gameTileWidth*GamePacket.gameTileHeight/3)
+	packSize=4096
+	def __init__(self,p,w,e):
+		self.players=p
+		self.wallpos=w
+		self.explpos=e
+		
+#intro packet contains full detail to catch up with latest information.
+class IntroPacket:
 	packSize=12000
 	def __init__(self,p,w,e):
 		self.players=p
 		self.walls=w
 		self.explpos=e
-		
 	

@@ -41,8 +41,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 #follow up, private connection, main loop of client.
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	s.connect((HOST, data.port))
+	
+	#expect IntroPacket here.
+	
+	
+	#then into main loop
 	while running: #socket will close after running fin.
 		screen.fill((0,0,0))#wipe screen clean.
+		scr_expl.fill((0,0,0))
 		#clean gp historical burdens
 		gp.newwall=-1
 		gp.explode=-1
@@ -127,14 +133,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 					screen.blit(scr_expl,(0,0))
 				else:
 					local_explode[k][m]=-1
-		scr_expl.fill((0,0,0))
+		
 		#draw walls.
-		for pos,exist in enumerate(world.walls):
-			if exist: 
-				p=gp.bstoXY(pos)
-				screen.fill((255,255,255),((p[0]-0.5)*gp.gameTileSize,p[1]*gp.gameTileSize,gp.size,gp.size))
-				local_wall[p[0]][p[1]]=1
-				
+		for w in world.wallpos:
+			p=gp.bstoXY(w[0])
+			local_wall[p[0]][p[1]]=1
+		for k,i in enumerate(local_wall):
+			for m,j in enumerate(i):
+				if j>=1:
+					screen.fill((255,255,255),((k-1)*gp.gameTileSize,m*gp.gameTileSize,gp.size,gp.size))
+			
 		#then update the screen.
 		pygame.display.flip()
 		clock.tick(30)

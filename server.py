@@ -22,10 +22,14 @@ def serve(port):
 	the job is simple, just open up a socket exclusively
 	for one client only.
 	'''
-	global world #one gigantic packet
+	global world 
 	global players
-	global walls
+	global wallpos
 	global explpos
+	
+	global intro 
+	global walls
+
 	
 	debug_freq=0 #print the screen every ten times over loop.
 	print('prepareing {}'.format(port))
@@ -35,20 +39,24 @@ def serve(port):
 		conn, addr = s.accept()
 		with conn:
 			print('REConnected by', addr)
-			#preload current world.
-			
-			#then go with flow
+			#send intro packet
+			#TODO: intro packet.
+			#then in main loop
 			while True:
 				#update explpos since it is intrim.
-				world.explpos={e for e in explpos if e[1]>=time()-0.25}
+				world.explpos={e for e in world.explpos if e[1]>=time()-0.25}
+				world.wallpos={e for e in world.wallpos if e[1]>=time()-0.25}
 				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
 				if data.quit == 0: 
 					world.players[data.player_id]= data
 					if data.newwall>-1:
-						world.walls.overwrite('0b1',data.newwall)
+						intro.walls.overwrite('0b1',data.newwall)
+						world.wallpos.add((data.newwall,time(),1)) #added wall
 					if data.explode>-1:
 						world.explpos.add((data.explode,time()))
+						#TODO: we need to remove the walls around explpos.
+						
 				else:#if quit.
 					world.players.pop(data.player_id)
 				conn.send(pickle.dumps(world))
@@ -61,10 +69,11 @@ players=dict()
 bitwallLen=int(gp.GamePacket.gameTileWidth*gp.GamePacket.gameTileHeight)
 print(f'bitwallLen:{bitwallLen}')
 walls=BitArray(length=bitwallLen)
-
+wallpos=set()
 #explosion set are only kept by server.
 explpos=set()
-world=gp.WorldPacket(players,walls,explpos)
+intro=gp.IntroPacket(players,walls,explpos)
+world=gp.WorldPacket(players,wallpos,explpos)
 PACKSIZE=gp.WorldPacket.packSize
 #setup monitor work
 e.submit(monit)
