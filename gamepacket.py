@@ -4,7 +4,7 @@ from bitstring import BitArray
 import socket
 import pickle
 class GamePacket:
-	explosionRange=100
+	explosionRange=20
 	gameTileSize=4
 	gameWidth=800
 	gameHeight=600
@@ -46,7 +46,7 @@ class WorldPacket:
 		
 #intro packet contains full detail to catch up with latest information.
 class IntroPacket:
-	packSize=12000
+	packSize=4096
 	def __init__(self,p,w,e):
 		self.players=p
 		self.walls=w

@@ -4,6 +4,7 @@ import pickle
 import gamepacket
 import pygame
 import random
+import sys
 from bitstring import BitArray
 
 gp=gamepacket.GamePacket(random.randint(50,5000)) 
@@ -14,6 +15,9 @@ HOST = '127.0.0.1'    # address of server if you run your own
 #HOST = '192.168.1.30'    # address of server if you run your own
 #HOST = '192.168.1.111'    # address of server if you are in class
 #HOST = '123.243.118.66'    # address of server if you want to join others over the internet.
+#use address from command argv.
+if len(sys.argv)>1 and sys.argv[1] != '':
+	HOST=sys.argv[1]
 PORT = 50007          # the port for first contact
 PACKSIZE=gamepacket.WorldPacket.packSize
 print(f'PACKSIZE set to:{PACKSIZE}')
@@ -93,7 +97,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 				elif event.key==pygame.K_f:
 					full_screen=not full_screen
 					if full_screen: 
-						screen=pygame.display.set_mode((0, 0), pygame.FULLSCREEN,pygame.SRCALPHA)
+						screen=pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 						width,height=screen.get_size()
 					else: 
 						screen=pygame.display.set_mode(gp.gameMode)
@@ -127,17 +131,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		#draw a explosion circle
 		for k,i in enumerate(local_explode):
 			for m,j in enumerate(i):
-				if j >= 0 and j < 100:
-					local_explode[k][m]+=20
+				if j >= 0 and j < gp.explosionRange:
+					local_explode[k][m]+=5
 					pygame.draw.circle(scr_expl,(250,250,50,100-j),(k*gp.gameTileSize,m*gp.gameTileSize),j)
 					screen.blit(scr_expl,(0,0))
 				else:
 					local_explode[k][m]=-1
 		
 		#draw walls.
+		#local_wall=[[-1 for _ in range(gp.gameTileHeight+4)] for _ in range(gp.gameTileWidth+4)]
 		for w in world.wallpos:
 			p=gp.bstoXY(w[0])
-			local_wall[p[0]][p[1]]=1
+			if w[2]==-1:
+				local_wall[p[0]][p[1]]=-1
+			else:
+				local_wall[p[0]][p[1]]=1
 		for k,i in enumerate(local_wall):
 			for m,j in enumerate(i):
 				if j>=1:

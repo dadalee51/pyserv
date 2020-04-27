@@ -4,17 +4,28 @@ import pickle
 import gamepacket as gp
 import concurrent.futures
 import random
+import math
 from contextlib import suppress
 from bitstring import BitArray
 from time import sleep,time
+
+def point_circle_collide(px, py, cx, cy, r):
+	dx=px-cx
+	dy=py-cy
+	distance=math.sqrt((dx*dx)+(dy*dy))
+	if distance<r:
+		return True
+	else:
+		return False
 
 def monit():
 	#method which only print stuff to console to aid debugging.
 	global world
 	print('monit started')
 	while True:
-		print(world.players)
-		sleep(1)
+		print('players:',world.players)
+		#print('wallpos:',world.wallpos)
+		sleep(2)
 
 def serve(port):
 	'''
@@ -29,7 +40,7 @@ def serve(port):
 	
 	global intro 
 	global walls
-
+	ggp=gp.GamePacket()
 	
 	debug_freq=0 #print the screen every ten times over loop.
 	print('prepareing {}'.format(port))
@@ -44,8 +55,9 @@ def serve(port):
 			#then in main loop
 			while True:
 				#update explpos since it is intrim.
-				world.explpos={e for e in world.explpos if e[1]>=time()-0.25}
-				world.wallpos={e for e in world.wallpos if e[1]>=time()-0.25}
+				world.explpos={e for e in world.explpos if e[1]>=time()-0.05}
+				#problem: we need to keep a wall in world, and a wall timed for sending!
+				#world.wallpos={e for e in world.wallpos if e[1]>=time()-0.55}
 				#read updates from client.
 				data = pickle.loads(conn.recv(PACKSIZE))
 				if data.quit == 0: 
@@ -55,12 +67,23 @@ def serve(port):
 						world.wallpos.add((data.newwall,time(),1)) #added wall
 					if data.explode>-1:
 						world.explpos.add((data.explode,time()))
-						#TODO: we need to remove the walls around explpos.
-						
+						#send a negative wall to client.
+						rst=set()
+						for wp in world.wallpos:
+							x,y=ggp.bstoXY(wp[0])
+							cx,cy=ggp.bstoXY(data.explode)
+							if point_circle_collide(x,y,cx,cy,ggp.explosionRange/4):
+								print('collided at',wp,'clearing to neg 1')
+								rst.add((wp[0],wp[1],-1))
+							else:
+								rst.add((wp[0],wp[1],1))
+						world.wallpos=rst
 				else:#if quit.
 					world.players.pop(data.player_id)
 				conn.send(pickle.dumps(world))
 				
+				
+#main program starts here.
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '' 
 PORT = 50007
