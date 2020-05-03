@@ -85,7 +85,7 @@ def serve(port):
 				
 #main program starts here.
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
-HOST = '' 
+HOST = '' #for heroku?
 PORT = 50007
 running=True
 players=dict()
