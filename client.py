@@ -18,7 +18,7 @@ HOST = '127.0.0.1'    # address of server if you run your own
 #use address from command argv.
 if len(sys.argv)>1 and sys.argv[1] != '':
 	HOST=sys.argv[1]
-PORT = 50007          # the port for first contact
+PORT = 80          # the port for first contact
 PACKSIZE=gamepacket.WorldPacket.packSize
 print(f'PACKSIZE set to:{PACKSIZE}')
 print('press q to quit, press f to switch fullscreen...')

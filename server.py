@@ -86,7 +86,7 @@ def serve(port):
 #main program starts here.
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '' #for heroku?
-PORT = 50007
+PORT = 80
 running=True
 players=dict()
 bitwallLen=int(gp.GamePacket.gameTileWidth*gp.GamePacket.gameTileHeight)
