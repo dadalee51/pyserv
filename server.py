@@ -22,7 +22,8 @@ def point_circle_collide(px, py, cx, cy, r):
 def monit():
 	#method which only print stuff to console to aid debugging.
 	global world
-	print('monit started')
+  global PORT
+	print('monit started:PORT',PORT)
 	while True:
 		print('players:',world.players)
 		#print('wallpos:',world.wallpos)
