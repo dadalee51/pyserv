@@ -88,7 +88,7 @@ def serve(port):
 #main program starts here.
 e=concurrent.futures.ThreadPoolExecutor(max_workers=10)
 HOST = '0.0.0.0' #for heroku?
-PORT = 80
+PORT = 50007
 if len(sys.argv)>1 and sys.argv[1] != '':
   PORT=int(sys.argv[1])
 running=True
