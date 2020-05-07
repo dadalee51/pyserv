@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3.8
 #server v7
 import socket
 import sys
