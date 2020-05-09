@@ -13,13 +13,13 @@ sndCH2=''
 try:
     engSound=pygame.mixer.Sound("sfx_vehicle_engineloop.wav")
     carSound=pygame.mixer.Sound("sfx_vehicle_carloop1.wav")
-    fastSound=pygame.mixer.Sound("sfx_vehicle_carloop1.wav")
+    fastSound=pygame.mixer.Sound("sfx_vehicle_carloop2.wav")
     sndCh=pygame.mixer.Channel(0)
     sndCh2=pygame.mixer.Channel(1)
     sndCh2.set_volume(0.5)
-    #pygame.mixer.music.load("ff7choco.mid")
-    #pygame.mixer.music.set_volume(0.5)
-    #pygame.mixer.music.play()
+    pygame.mixer.music.load("ff7choco.mid")
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play()
 except:
     pass #don't do anything if we can't play music.
 #MR LEE set mode and clock
@@ -72,13 +72,15 @@ while True:
     carX+=speedX
     carY+=speedY
     
-    if carY >= 400: #on lowest screen position.
+    if carY > 400: #on lowest screen position.
         carY=400
         backY-=speedY
+        cloudY-=speedY
         speedY=0
     elif carY < 50: # in air
         carY=50
         backY-=speedY#moving up
+        cloudY-=speedY
     if backY<=0:
         backY=0
     elif backY>=200:
