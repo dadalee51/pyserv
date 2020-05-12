@@ -45,8 +45,11 @@ speedY=0
 gravity=5
 distX=0
 distY=0
-altitude=0
+altitude=0#the real height of car
 isFlying=0
+isAir=0
+oldAlt=0
+crashed=0
 #MR LEE's code
 def drawCar(screen,x,y,fly):
     if fly:
@@ -68,23 +71,43 @@ def drawText(screen,x,y,text):
     screen.blit(img, (x,y))
 #MR LEE main program loop starts here.
 while True:
-    screen.fill(WHITE)
+    #update car position by speed in x/y direction
     carX+=speedX
     carY+=speedY
+    oldAlt=altitude
+    altitude+=speedY
+    if isAir and speedY>90 and backY <= 0:
+        crashed=1
     
+    if altitude>0 and backY<=0:
+        altitude=0
+        isAir=0
+        
+    
+    #limit car position
     if carY > 400: #on lowest screen position.
         carY=400
-        backY-=speedY
-        cloudY-=speedY
-        speedY=0
     elif carY < 50: # in air
         carY=50
-        backY-=speedY#moving up
+        isAir=1
+        
+    #when altitude is greater than -400, backY will not be effected by speedY
+    #this allows us to feel that the car is still falling.
+    if altitude > -400:
+        backY-=speedY
+    
+    if altitude < 0:
         cloudY-=speedY
+        
+        
+    #moving background
     if backY<=0:
         backY=0
     elif backY>=200:
         backY=200
+
+    
+    #horizontal positions
     if carX > 400:
         carX=400
     elif carX < 0:
@@ -96,19 +119,25 @@ while True:
         cloudX-=speedX
     if cloudX <= -20:
         cloudX=1000
-        cloudY=ri(0,200)
+        if isAir:
+            if oldAlt > altitude: #going up
+                cloudY=ri(-300,300)
+            else:#going down
+                cloudY=ri(300,900)
+        else:
+            cloudX=1000
+            cloudY=ri(0,380)
     
     distX+=speedX
     try: sndCh.set_volume(speedX/100+0.2)
     except: pass
-    #update positions
-    
+        
     #handle keys
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         isFlying=1
         speedY-=1
-        #play sound when speederation
+        #play sound when speeding up
         try: sndCh2.play(engSound)
         except: pass
     else:
@@ -124,6 +153,9 @@ while True:
     else:
         if speedX>0:
             speedX=int(0.99*speedX)
+    if keys[pygame.K_DOWN]:
+        #fix car, reset high score.
+        crashed=0
     if keys[pygame.K_LEFT]:
         speedX-=1
         #play sound when speederation
@@ -138,11 +170,14 @@ while True:
             sys.exit()
     #drag all shapes
     drawBackground(screen,0,backY)
+    drawCloud(screen,cloudX,cloudY)
     drawText(screen,20,20,'Speed:'+str(speedX)+' pixels per frame')
     drawText(screen,20,40,'Distance:'+str(distX)+' pixels')
     drawText(screen,20,60,'Altitude:'+str(altitude)+' pixels')
     drawText(screen,20,80,'backY:'+str(backY)+' pixels')
     drawText(screen,20,100,'speedY:'+str(speedY)+' pixels')
+    drawText(screen,20,120,'isAir:'+str(isAir))
+    drawText(screen,20,140,'crashed:'+str(crashed))
 
     #road signs needs to be above background
     if carX >= 400:
@@ -155,13 +190,12 @@ while True:
     else:
         for xs in signXList:
             drawRoadSign(screen,xs,500+backY)
-            
-    #draw anything could be in front of the backgrounds.
-    drawCloud(screen,cloudX,cloudY)
-    if speedX<80:
+    if speedY > 50 and altitude < -600:
+        drawCar(screen,carX,carY+ri(-2,2),isFlying)        
+    elif speedX < 80 and speedY > 20:
         drawCar(screen,carX,carY,isFlying)
     else:
-        drawCar(screen,carX,carY+ri(-3,3),isFlying)
+        drawCar(screen,carX,carY+ri(-1,1),isFlying)
     
     pygame.display.flip()
     clock.tick(30)
