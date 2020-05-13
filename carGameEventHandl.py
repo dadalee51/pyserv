@@ -9,7 +9,8 @@ engSound=''
 carSound=''
 fastSound=''
 sndCh=''
-sndCH2=''
+sndCh2=''
+sndCh3=''
 try:
     engSound=pygame.mixer.Sound("sfx_vehicle_engineloop.wav")
     carSound=pygame.mixer.Sound("sfx_vehicle_carloop1.wav")
@@ -55,7 +56,7 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=10
+fuel=1000
 gameOver=0
 #MR LEE's code
 def drawCar(screen,x,y,fly):
