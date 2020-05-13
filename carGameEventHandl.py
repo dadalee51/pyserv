@@ -14,8 +14,10 @@ try:
     engSound=pygame.mixer.Sound("sfx_vehicle_engineloop.wav")
     carSound=pygame.mixer.Sound("sfx_vehicle_carloop1.wav")
     fastSound=pygame.mixer.Sound("sfx_vehicle_carloop2.wav")
+    outfuelSound=pygame.mixer.Sound("sfx_movement_stairs4a.wav")
     sndCh=pygame.mixer.Channel(0)
     sndCh2=pygame.mixer.Channel(1)
+    sndCh3=pygame.mixer.Channel(2)
     sndCh2.set_volume(0.5)
     pygame.mixer.music.load("ff7choco.mid")
     pygame.mixer.music.set_volume(0.5)
@@ -26,6 +28,7 @@ except:
 screen=pygame.display.set_mode((800,600))
 clock=pygame.time.Clock()
 font = pygame.font.SysFont(None, 20)
+font2 = pygame.font.SysFont(None, 40)
 #MR LEE set colours
 BLACK=(0,0,0)
 WHITE=(255,255,255)
@@ -52,7 +55,7 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=1000
+fuel=10
 gameOver=0
 #MR LEE's code
 def drawCar(screen,x,y,fly):
@@ -74,8 +77,8 @@ def drawText(screen,x,y,text):
     img = font.render(text, True, BLACK)
     screen.blit(img, (x,y))
 def drawGameOver(screen,x,y):
-    img = font.render("GAME OVER! Your High Score is:"+str(-1*bestAlt+bestDst), True, BLACK)
-    img2 = font.render("Press  Q  to close this window.", True, BLACK)
+    img = font2.render("GAME OVER! Your High Score is:"+str(-1*bestAlt+bestDst), True, RED)
+    img2 = font.render("Press  Q  to close this window.", True, RED)
     screen.blit(img, (x,y))
     screen.blit(img2, (x,y+20))
 #MR LEE main program loop starts here.
@@ -87,7 +90,7 @@ while not gameOver:
         bestAlt=altitude
     oldAlt=altitude
     altitude+=speedY
-    if inAir and speedY>30 and backY <= 0:
+    if inAir and speedY>60 and backY <= 0:
         crashed=1
         bestAlt=0
     if altitude>0 and backY<=0:
@@ -147,33 +150,43 @@ while not gameOver:
     except: pass
     
     #allow gameplay when fuel is greater than zero
-    if fuel <= 0:
+    if fuel <= 0 and not inAir and altitude==0:
         gameOver=1
     #handle keys
     keys = pygame.key.get_pressed()
     if gameOver:#disable keys
         drawGameOver(screen,200,200)
-        continue
+        break
     if keys[pygame.K_UP]:
-        fuel-=2
-        blasting=1
-        speedY-=1
-        #play sound when speeding up
-        try: sndCh2.play(engSound)
-        except: pass
-    else:
+        if fuel>0:
+            fuel-=2
+            blasting=1
+            speedY-=1
+            #play sound when speeding up
+            try: sndCh2.play(engSound)
+            except: pass
+        else: #no fuel left.
+            blasting=0
+            speedY+=gravity
+            try: sndCh2.play(outfuelSound)
+            except: pass
+    else: #not up
         blasting=0
         if speedY < 100 and altitude < 0:
             speedY+=gravity
         try: sndCh2.stop()
         except: pass
     if keys[pygame.K_RIGHT]:
-        fuel-=1
-        speedX+=1
-        #play sound when speederation
-        try:sndCh.play(carSound,maxtime=200)
-        except:pass
-    else:
+        if fuel>0:
+            fuel-=1
+            speedX+=1
+            #play sound when speederation
+            try:sndCh.play(carSound,maxtime=200)
+            except:pass
+        else: #no fuel left.
+            try: sndCh2.play(outfuelSound)
+            except: pass
+    else:#if not right
         if speedX>0:
             speedX=int(0.99*speedX)
     if keys[pygame.K_DOWN]:
@@ -191,11 +204,15 @@ while not gameOver:
         gameOver=0
         fuel=1000
     if keys[pygame.K_LEFT]:
-        fuel-=1
-        speedX-=1
-        #play sound when speederation
-        try: sndCh.stop()
-        except: pass
+        if fuel>0:
+            fuel-=1
+            speedX-=1
+            #play sound when speederation
+            try: sndCh.stop()
+            except: pass
+        else: #no fuel left.
+            try: sndCh2.play(outfuelSound)
+            except: pass
     if keys[pygame.K_q]:
         pygame.quit()
         sys.exit()
@@ -228,7 +245,7 @@ while not gameOver:
         for xs in signXList:
             drawRoadSign(screen,xs,500+backY)
     #simulate wind
-    if blasting or speedX>60:
+    if blasting or speedX>60 or speedY > 30:
         drawCar(screen,carX,carY+ri(-1,1),blasting)
     else:
         drawCar(screen,carX,carY,blasting)
