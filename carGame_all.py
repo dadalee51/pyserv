@@ -16,12 +16,14 @@ try:
     carSound=pygame.mixer.Sound("sfx_vehicle_carloop1.wav")
     fastSound=pygame.mixer.Sound("sfx_vehicle_carloop2.wav")
     outfuelSound=pygame.mixer.Sound("sfx_movement_stairs4a.wav")
+    breakSound=pygame.mixer.Sound("sfx_vehicle_breaks.wav")
     sndCh=pygame.mixer.Channel(0)
     sndCh2=pygame.mixer.Channel(1)
     sndCh3=pygame.mixer.Channel(2)
-    sndCh2.set_volume(0.5)
+    sndCh.set_volume(0.3)
+    sndCh2.set_volume(0.4)
     pygame.mixer.music.load("ff7choco.mid")
-    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play()
 except:
     pass #don't do anything if we can't play music.
@@ -94,6 +96,8 @@ while not gameOver:
     if inAir and speedY>60 and backY <= 0:
         crashed=1
         bestAlt=0
+        try: sndCh3.play(breakSound)
+        except: pass
     if altitude>0 and backY<=0:
         altitude=0
         inAir=0
