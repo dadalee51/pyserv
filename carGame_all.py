@@ -60,16 +60,26 @@ bestAlt=0
 bestDst=0
 fuel=1000
 gameOver=0
-carImg=pygame.image.load('car.png')
+fileNotFound=False
+try:
+    carImg=pygame.image.load('car.png')
+except:
+    fileNotFound=True
+    pass
 #MR LEE's code
 def drawCar(screen,x,y,fly):
-    if fly:
-        pygame.draw.ellipse(screen,RED,[x+23,y+60,20,ri(20,40)])
-        pygame.draw.ellipse(screen,RED,[x+115,y+60,20,ri(20,40)])
-    #pygame.draw.circle(screen,BLACK, [x,y], 30)
-    #pygame.draw.circle(screen,BLACK, [x+100,y], 30)
-    #pygame.draw.rect(screen,GREEN,[x,y,100,-50])
-    screen.blit(carImg,(x,y))
+    if fileNotFound:
+        if fly:
+            pygame.draw.ellipse(screen,RED,[x-10,y+20,20,ri(20,40)])
+            pygame.draw.ellipse(screen,RED,[x+90,y+20,20,ri(20,40)])    
+        pygame.draw.circle(screen,BLACK, [x,y], 30)
+        pygame.draw.circle(screen,BLACK, [x+100,y], 30)
+        pygame.draw.rect(screen,GREEN,[x,y,100,-50])
+    else:
+        if fly:
+            pygame.draw.ellipse(screen,RED,[x+23,y+60,20,ri(20,40)])
+            pygame.draw.ellipse(screen,RED,[x+115,y+60,20,ri(20,40)])
+        screen.blit(carImg,(x,y))        
 def drawBackground(screen,x,y):
     pygame.draw.rect(screen,GREY,[x,y+400,800,200])
     pygame.draw.rect(screen,BLUE,[x,y-200,800,600])
