@@ -45,6 +45,8 @@ carY=400
 cloudX=300
 cloudY=200
 backY=0
+back2X=0
+back2Y=-500
 signXList=[0,400,800,1200]
 speedX=0
 speedY=0
@@ -58,11 +60,12 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=1000
+fuel=100000
 gameOver=0
 fileNotFound=False
 try:
     carImg=pygame.image.load('car.png')
+    mntImg=pygame.image.load('mountains.jpg')
 except:
     fileNotFound=True
     pass
@@ -81,8 +84,10 @@ def drawCar(screen,x,y,fly):
             pygame.draw.ellipse(screen,RED,[x+115,y+60,20,ri(20,40)])
         screen.blit(carImg,(x,y))        
 def drawBackground(screen,x,y):
-    pygame.draw.rect(screen,GREY,[x,y+400,800,200])
     pygame.draw.rect(screen,BLUE,[x,y-200,800,600])
+    if not fileNotFound:
+        screen.blit(mntImg,(back2X,back2Y))
+    pygame.draw.rect(screen,GREY,[x,y+400,800,200])
 def drawCloud(screen,x,y):
     pygame.draw.ellipse(screen,WHITE,[x,y,50,20])
     pygame.draw.ellipse(screen,WHITE,[x-25,y+15,50,20])
@@ -123,8 +128,10 @@ while not gameOver:
     #this allows us to feel that the car is still falling.
     if altitude > -400:
         backY-=speedY
+        back2Y-=speedY/100
     if altitude < 0:
         cloudY-=speedY
+        back2Y-=speedY/100
     if altitude >= 0:
         speedY=0
     #moving background
@@ -135,6 +142,7 @@ while not gameOver:
     #horizontal positions
     if carX > 400:
         carX=400
+        back2X-=speedX/50
     elif carX < 0:
         carX=0
         speedX=0
@@ -163,6 +171,9 @@ while not gameOver:
                 cloudY=700
     distX+=speedX
     bestDst = max(distX,bestDst)
+    #wrap around the image background
+    if back2X<-3000:
+        back2X=0
     try: sndCh.set_volume(speedX/100+0.2)
     except: pass
     
@@ -243,7 +254,7 @@ while not gameOver:
     drawText(screen,20,20,'Speed:'+str(speedX)+' pixels per frame')
     drawText(screen,20,40,'Distance:'+str(distX)+' pixels')
     drawText(screen,20,60,'Altitude:'+str(altitude)+' pixels')
-    drawText(screen,20,80,'backY:'+str(backY)+' pixels')
+    drawText(screen,20,80,'backY:'+str(backY)+' , back2Y:'+str(back2Y))
     drawText(screen,20,100,'speedY:'+str(speedY)+' pixels')
     drawText(screen,20,120,'inAir:'+str(inAir))
     drawText(screen,20,140,'crashed:'+str(crashed))
