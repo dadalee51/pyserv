@@ -15,6 +15,9 @@ carY=400
 cloudX=300
 cloudY=200
 speedX=1
+speedY=0
+gravity=1
+altitude=0
 #MR LEE
 def drawCar(screen,x,y):
     pygame.draw.circle(screen,BLACK,[x,y],30)
@@ -29,22 +32,36 @@ def drawCloud(screen,x,y):
 #MR LEE's code
 while True:
     carX+=speedX #carX=carX+speedX
-    #speedX+=1 #speedX=speedX+1
-    #print(carX,speedX)
+    carY+=speedY #carY=carY+speedY
+    altitude+=speedY
+    print(altitude)
     screen.fill(WHITE)
     drawBackground(screen,0,0)
+    if altitude > 0:
+        altitude =0
+        speedY=0
+    if carY > 400:
+        carY=400
+    if carY < 0:
+        carY=0
     if carX > 400:
         carX=400
         cloudX-=speedX
+    if carX < 0 :
+        carX=0
     if cloudX < -20:
         cloudX=1000
         cloudY=ri(0,300)
     if speedX > 100:
         speedX = 100
+    #MR LEE's code
     keys=pygame.key.get_pressed()
     if keys[pygame.K_UP]:
-        pass
-    elif keys[pygame.K_RIGHT]:
+        speedY-=1 #speedY=speedY-1
+    else:
+        speedY+=gravity
+    #print(speedY)
+    if keys[pygame.K_RIGHT]:
         speedX+=1
     elif keys[pygame.K_LEFT]:
         speedX-=1

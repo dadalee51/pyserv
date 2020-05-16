@@ -16,6 +16,10 @@ carY=400
 cloudX=300
 cloudY=200
 speedX=1
+speedY=0
+gravity=3
+altitude=0#how far the car is away from the ground.
+backY=0
 signXList=[0,200,400,600,800]
 #MR LEE's code
 def drawCar(screen,x,y):
@@ -34,8 +38,23 @@ def drawRoadSign(screen,x,y):
 while True:
     screen.fill(WHITE)
     carX+=speedX
-    #speedX+=1
-    drawBackground(screen,0,0)
+    carY+=speedY
+    altitude+=speedY
+    print(altitude)
+    if carY < 100:
+        carY=100
+    if carY > 400:
+        carY=400
+        speedY=0
+    if altitude > 0: #when imaginary height is lower than ground
+        altitude = 0
+    if altitude > -400:
+        backY-=speedY
+    drawBackground(screen,0,backY)
+    #MR LEE line 45 - constrain carX when its' too small
+    if carX < 0:
+        carX=0
+        speedX=0
     if carX > 400:
         carX=400
         for i,xs in enumerate(signXList):
@@ -54,12 +73,14 @@ while True:
         cloudY=ri(0,200)
     if speedX > 40:
         speedX = 40
-    #print(carX,speedX)
     #handle keys here -MR LEE
     keys=pygame.key.get_pressed()
     if keys[pygame.K_UP]:
-        pass #try to do whatever here
-    elif keys[pygame.K_LEFT]:
+        speedY-=1
+    else:#when up key is not pressed, gravity kicks in.
+        if altitude <0:#when car is not on floor, we add gravity.
+            speedY+=gravity
+    if keys[pygame.K_LEFT]:
         speedX-=1
     elif keys[pygame.K_RIGHT]:
         speedX+=1
