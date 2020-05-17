@@ -60,7 +60,8 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=100000
+fuel=1000
+logFuel=fuel
 gameOver=0
 fileNotFound=False
 try:
@@ -97,7 +98,7 @@ def drawText(screen,x,y,text):
     img = font.render(text, True, BLACK)
     screen.blit(img, (x,y))
 def drawGameOver(screen,x,y):
-    img = font2.render("GAME OVER! Your High Score is:"+str(-1*bestAlt+bestDst), True, RED)
+    img = font2.render("GAME OVER! Your High Score is:"+str((-1*bestAlt+bestDst)/logFuel), True, RED)
     img2 = font.render("Press  Q  to close this window.", True, RED)
     screen.blit(img, (x,y))
     screen.blit(img2, (x,y+20))
@@ -259,7 +260,7 @@ while not gameOver:
     drawText(screen,20,120,'inAir:'+str(inAir))
     drawText(screen,20,140,'crashed:'+str(crashed))
     drawText(screen,20,160,'fuel:'+str(fuel))
-    drawText(screen,20,180,'bestScore:'+str(-1*bestAlt + bestDst))
+    drawText(screen,20,180,'bestScore:'+str((-1*bestAlt + bestDst)/logFuel))
     
     #road signs needs to be above background
     if carX >= 400:

@@ -34,7 +34,7 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=1000000000
+fuel=10**24
 #MR LEE's code
 def drawCar(screen,x,y,fly):
     if fly:
@@ -164,6 +164,8 @@ while True:
             fuel-=1
             speedX-=1
             #play sound when speederation
+    if keys[pygame.K_DOWN]:
+        crashed=0
     if keys[pygame.K_q]:
         pygame.quit()
         sys.exit()
@@ -195,12 +197,10 @@ while True:
     else:
         for xs in signXList:
             drawRoadSign(screen,xs,500+backY)
-    #simulate wind
+    #simulate wind (vibrating car)
     if blasting or speedX>60 or speedY > 30:
-        drawCar(screen,carX,carY+ri(-1,1),blasting)
+        drawCar(screen,carX,carY+ri(-10,10),blasting)
     else:
         drawCar(screen,carX,carY,blasting)
     pygame.display.flip()
     clock.tick(30)
-
-
