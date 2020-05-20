@@ -1,4 +1,4 @@
-#tearDown - end product expected by 5/13/2020 Wed 5:30.
+#tearDown - wednesday checkpoint
 #MR Lee's pygame
 import pygame
 import sys
@@ -153,7 +153,7 @@ while True:
             #play sound when speederation
             try:sndCh.play(carSound,maxtime=200)
             except:pass
-        else: #no fuel left.
+        else: #no fuel left. #speedX-=1 #bug fix
             try: sndCh2.play(outfuelSound)
             except: pass
     else:#if not right

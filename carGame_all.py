@@ -213,6 +213,7 @@ while not gameOver:
             try:sndCh.play(carSound,maxtime=200)
             except:pass
         else: #no fuel left.
+            speedX-=1 #bug fix
             try: sndCh2.play(outfuelSound)
             except: pass
     else:#if not right

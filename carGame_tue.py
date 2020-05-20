@@ -64,7 +64,8 @@ while True:
         if event.type==pygame.QUIT:
             pygame.quit()
             sys.exit()
-    
+    mp=pygame.mouse.get_pressed()
+    print(mp)
     drawBackground(screen,0,0)
     drawCloud(screen,cloudX,cloudY)
     drawCar(screen,carX,carY)
