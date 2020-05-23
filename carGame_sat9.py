@@ -3,6 +3,10 @@
 import pygame
 import sys
 from random import randint as ri
+pygame.init()
+pygame.mixer.music.load('MariobrosPhase1.mid')
+pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.play()
 screen = pygame.display.set_mode((800,600))
 BLACK=(0,0,0)
 WHITE=(255,255,255)
@@ -27,7 +31,7 @@ def drawCar(screen,x,y):
     pygame.draw.circle(screen,BLACK,[x+100,y],30)
     pygame.draw.rect(screen,GREEN,[x,y,100,-50])
 def drawBackground(screen,x,y):
-    pygame.draw.rect(screen,BLUE,[x,y,800,400])
+    pygame.draw.rect(screen,BLUE,[x,y-200,800,600])
     pygame.draw.rect(screen,GREY,[x,y+400,800,200])
 def drawCloud(screen,x,y):
     pygame.draw.ellipse(screen,WHITE,[x,y,50,20])
@@ -45,11 +49,16 @@ while True:
         carY=100
     if carY > 400:
         carY=400
-        speedY=0
     if altitude > 0: #when imaginary height is lower than ground
         altitude = 0
+        speedY=0
     if altitude > -400:
         backY-=speedY
+    if backY <=0:
+        backY=0
+    elif backY >= 200:
+        backY=200
+    
     drawBackground(screen,0,backY)
     #MR LEE line 45 - constrain carX when its' too small
     if carX < 0:
@@ -60,12 +69,12 @@ while True:
         for i,xs in enumerate(signXList):
             if xs<=-200:
                 xs+=1100
-            drawRoadSign(screen,xs,500)
+            drawRoadSign(screen,xs,backY+500)
             xs-=speedX
             signXList[i]=xs
     else:#when car has not reached 400 yet
         for xs in signXList:
-            drawRoadSign(screen,xs,500)
+            drawRoadSign(screen,xs,backY+500)
     if carX>399:
         cloudX-=speedX
     if cloudX < -20:
@@ -95,3 +104,4 @@ while True:
     drawCar(screen,carX,carY)
     clock.tick(30)
     pygame.display.flip()
+

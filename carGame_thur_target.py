@@ -1,5 +1,4 @@
-#tearDown - end product expected by 5/13/2020 Wed 5:30.
-#MR Lee's pygame
+#MR Lee's pygame - starting point for Thursday class.
 import pygame
 import sys
 from random import randint as ri

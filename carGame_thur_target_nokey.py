@@ -2,13 +2,6 @@
 import pygame
 import sys
 from random import randint as ri
-pygame.init()
-try:
-    pygame.mixer.music.load('MariobrosPhase1.mid')
-    pygame.mixer.music.set_volume(0.5)
-    pygame.mixer.music.play()
-except:
-    pass
 screen = pygame.display.set_mode((800,600))
 BLACK=(0,0,0)
 WHITE=(255,255,255)
@@ -35,27 +28,27 @@ def drawBackground(screen,x,y):
 def drawCloud(screen,x,y):
     pygame.draw.ellipse(screen,WHITE,[x,y,50,20])
     pygame.draw.ellipse(screen,WHITE,[x-25,y+15,50,20])
-def test_keys(k):
-    time=pygame.time.get_ticks()
-    k=list(pygame.key.get_pressed())
-    if time in range(0,1000):
-        k[pygame.K_UP]=1
-    if time in range(5000,7000):
-        k[pygame.K_RIGHT]=1
-    #print(k)
-    return k
 while True:
-    screen.fill(WHITE)
     keys=pygame.key.get_pressed()
-    keys=test_keys(keys)
+    
+    '''Chloe's code'''
+    time=pygame.time.get_ticks()
+    keys=list(pygame.key.get_pressed())
+    if carY > 400 or carY < 100:
+        keys[pygame.K_UP]=1
+        keys[pygame.K_RIGHT]=1
+    else:
+        keys[pygame.K_UP]=0
+    '''End Chloe's code'''
+    
     if keys[pygame.K_UP]:
         speedY-=1
     else:
         speedY+=gravity
     if keys[pygame.K_RIGHT]:
-        speedX+=1 
+        speedX+=1
     if keys[pygame.K_LEFT]:
-        speedX-=1 
+        speedX-=1
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             pygame.quit()
@@ -71,8 +64,5 @@ while True:
     if cloudX < -20:
         cloudX=1000
         cloudY=ri(0,400)
-    if carY>400:
-        carY=400
-        speedY=0
     clock.tick(30)
     pygame.display.flip()

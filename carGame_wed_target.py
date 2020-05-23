@@ -4,6 +4,9 @@ import pygame
 import sys
 from random import randint as ri
 pygame.init()
+pygame.mixer.music.load('MariobrosPhase1.mid')
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play()
 #MR LEE set mode and clock
 screen=pygame.display.set_mode((800,600))
 clock=pygame.time.Clock()
@@ -38,8 +41,8 @@ fuel=1000
 #MR LEE's code
 def drawCar(screen,x,y,fly):
     if fly:
-        pygame.draw.ellipse(screen,RED,[x-10,y+20,20,ri(20,40)])
-        pygame.draw.ellipse(screen,RED,[x+90,y+20,20,ri(20,40)])
+        pygame.draw.ellipse(screen,RED,[x-10,y+20,20,ri(10,100)])
+        pygame.draw.ellipse(screen,RED,[x+90,y+20,20,ri(10,100)])
     pygame.draw.circle(screen,BLACK, [x,y], 30)
     pygame.draw.circle(screen,BLACK, [x+100,y], 30)
     pygame.draw.rect(screen,GREEN,[x,y,100,-50])
@@ -94,8 +97,8 @@ while True:
     elif carX < 0:
         carX=0
         speedX=0
-    if speedX >= 100:
-        speedX=100
+    if speedX >= 200:
+        speedX=200
     if carX>399:
         cloudX-=speedX
     if cloudX <= -20:
