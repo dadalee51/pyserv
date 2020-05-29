@@ -47,7 +47,7 @@ cloudY=200
 backY=0
 back2X=0
 back2Y=-500
-back3Y=-4000
+back3Y=-3000
 back3X=0
 signXList=[0,400,800,1200]
 speedX=0
@@ -62,7 +62,7 @@ oldAlt=0
 crashed=0
 bestAlt=0
 bestDst=0
-fuel=1000
+fuel=1000000
 logFuel=fuel
 gameOver=0
 fileNotFound=False
@@ -211,7 +211,7 @@ while not gameOver:
     if keys[pygame.K_UP]:
         if fuel>0:
             #more fuel is required to burn to reach high altitude
-            fuel-=2 * (altitude*-0.001)
+            fuel-=2
             blasting=1
             speedY-=1
             #play sound when speeding up
